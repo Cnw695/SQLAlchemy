@@ -11,7 +11,7 @@ CREATE TABLE station(
 
 CREATE TABLE measurements(
 	station VARCHAR(255) NOT NULL,
-	date VARCHAR(255) NOT NULL,
+	date  VARCHAR(255)NOT NULL,
 	prcp FLOAT,
 	tobs INT
 );
