@@ -1,4 +1,5 @@
 import numpy as np
+import datetime as dt
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -20,7 +21,7 @@ Base = automap_base()
 Base.prepare(engine, reflect=True)
 
 # Save reference to the table
-Measurement = Base.classes.Measurement
+Measurement = Base.classes.measurement
 Station = Base.classes.station 
 
 #################################################
@@ -35,13 +36,12 @@ app = Flask(__name__)
 @app.route("/")
 def welcome():
     """List all available api routes."""
-    return (
-        f"Available Routes:<br/>"
+    return (f"Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/api/v1.0/tobs<br/>"
         f"/api/v1.0/<start>"
-        f"/api/v1.0/<start>/<end>"
-    )
+        f"/api/v1.0/<start>/<end>")
+    
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
@@ -50,12 +50,20 @@ def precipitation():
 
     """Return a list of percipitation"""
     # Query percipitation
-    prcp = session.query(Measurement.date, Measurement.prcp).\
+    yearback= dt.date(2017,8,23)-dt.timedelta(days= 365)
+
+    rain = session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date >= yearback).order_by(Measurement.date).all()
 
     session.close()
 
-    return jsonify(prcp)
+    measuredprcp = []
+    for date, prcp in rain:
+        precipitation_dict={}
+        precipitation_dict[date] = prcp
+        measuredprcp.append(precipitation_dict)
+
+    return jsonify(measuredprcp)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
@@ -63,35 +71,53 @@ def tobs():
     session = Session(engine)
 
     """Return a list of tobs"""
-    # Query 
-    tobs = session.query(Measurement.tobs).all()
+    # Query temp observations
+
+    yearback= dt.date(2017,8,23)-dt.timedelta(days= 365)
+    tempq = session.query(Measurement.date, Measurement.tobs).\
+        filter(Measurement.date >= yearback).order_by(Measurement.date).all()
+                     
+
+    tempobs = []
+    for date, tobs in tempq:
+        temps_dict={}
+        temps_dict[date] = tobs
+        tempobs.append(temps_dict)
+
 
     session.close()
 
-    return jsonify(tobs)
+    return jsonify(tempobs)
 
 @app.route("/api/v1.0/<start>")
-def start():
+def start(start):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    """Return a list of percipitation"""
-    # Query all passengers
-    start = session.query(Measurement.date).all()
+    """Start"""
+    # Query start date
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).all()
 
     session.close()
 
-    return jsonify(start)
+    return jsonify(results)
 
 @app.route("/api/v1.0/<start>/<end>")
-def start_end():
+def start_end(start, end):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    """Return a list of percipitation"""
-    # Query all passengers
-    start_end = session.query(Measurement.date).all()
+    """Ranged"""
+    # date range
+    start_date = dt.date(start)
+    end_date = dt.date(end)
+    start_end = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
 
     session.close()
 
     return jsonify(start_end)
+
+if __name__ == "__main__":
+    app.run(debug=True)
