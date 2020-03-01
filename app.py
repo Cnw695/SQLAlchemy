@@ -90,28 +90,24 @@ def tobs():
     return jsonify(tempobs)
 
 @app.route("/api/v1.0/<start>")
-def start(start):
+def start(date):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     """Start"""
     # Query start date
-    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start).all()
-
-    session.close()
-
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= date).all()
     return jsonify(results)
 
 @app.route("/api/v1.0/<start>/<end>")
-def start_end(start, end):
+def start_end(date, date):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     """Ranged"""
     # date range
-    start_date = dt.date(start)
-    end_date = dt.date(end)
+    start_date = dt.date(date)
+    end_date = dt.date(date)
     start_end = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
 
