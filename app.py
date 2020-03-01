@@ -55,7 +55,7 @@ def precipitation():
     rain = session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date >= yearback).order_by(Measurement.date).all()
 
-    session.close()
+
 
     measuredprcp = []
     for date, prcp in rain:
@@ -85,11 +85,11 @@ def tobs():
         tempobs.append(temps_dict)
 
 
-    session.close()
+ 
 
     return jsonify(tempobs)
 
-@app.route("/api/v1.0/<start>")
+@app.route("/api/v1.0/<date>")
 def start(date):
     # Create our session (link) from Python to the DB
     session = Session(engine)
@@ -100,18 +100,18 @@ def start(date):
     return jsonify(results)
 
 @app.route("/api/v1.0/<start>/<end>")
-def start_end(date, date):
+def start_end(start,end):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     """Ranged"""
     # date range
-    start_date = dt.date(date)
-    end_date = dt.date(date)
+    start_date = dt.date(start)
+    end_date = dt.date(end)
     start_end = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
 
-    session.close()
+
 
     return jsonify(start_end)
 
