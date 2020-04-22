@@ -105,7 +105,7 @@ def start_end(start,end):
     session = Session(engine)
 
     """Ranged"""
-    # date range
+    # date range beginning to end yyyy/mm/dd
     start_date = dt.date(start)
     end_date = dt.date(end)
     start_end = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
