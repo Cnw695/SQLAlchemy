@@ -1,19 +1,13 @@
 ## SQLAlchemy
 ### Climate Analysis and Exploration
+### Tools:
+* python, numpy, pandas, datetime, sqlalchemy, flask, matplotlib
 
-* Python and SQLAlchemy to do basic climate analysis and data exploration of your climate database. All of the following analysis is done  using SQLAlchemy ORM queries, Pandas, and Matplotlib.
+Conduct climate analysis and data exploration of weather station database. Beginning with the retrieval of the data from a SQL database. Executing SQL queries with in a pandas data frame and then designing supportive charts to interpret 
 
-### Analysis
-* Design a query to retrieve the last 12 months of data.
-* Plot the results using the DataFrame plot method.
-* Temperature Analysis
-### Climate App
-* Designed a Flask API based on the queries.
-* Return a JSON list.
- 
-
-
-
+Pandas Data Pull and exploration-->>>>SQLAlchemy/climate.ipynb
+Flask app-->>>>>>>SQLAlchemy/app.py /
+SQL Table creation-->>>SQLAlchemy/Resources/hawaii.sql
 
 
 
